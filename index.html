@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#0a0a14">
+    <meta name="color-scheme" content="dark">
+
+    <!-- SEO -->
+    <title>w1zardz — PocketMine-MP Developer | Minecraft Bedrock Tools & Plugins</title>
+    <meta name="description" content="Open-source PocketMine-MP plugins and Minecraft Bedrock Edition developer tools by w1zardz. Form builder, crashdump analyzer, glyph editor, color formatter, weather plugin and more.">
+    <meta name="keywords" content="PocketMine-MP, PMMP, PocketMine, Minecraft Bedrock, Pocket Edition, MCPE, plugins, developer tools, PHP, w1zardz, Bedrock Edition, PocketMine plugins, PMMP plugins, Minecraft server">
+    <meta name="author" content="w1zardz">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://w1zardz.github.io/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="w1zardz — PocketMine-MP Developer">
+    <meta property="og:description" content="Open-source PocketMine-MP plugins and Minecraft Bedrock developer tools.">
+    <meta property="og:url" content="https://w1zardz.github.io/">
+    <meta property="og:site_name" content="w1zardz">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="w1zardz — PocketMine-MP Developer">
+    <meta name="twitter:description" content="Open-source PocketMine-MP plugins and Minecraft Bedrock developer tools.">
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "mainEntity": {
+            "@type": "Person",
+            "name": "w1zardz",
+            "url": "https://w1zardz.github.io/",
+            "sameAs": ["https://github.com/w1zardz"],
+            "jobTitle": "PocketMine-MP Developer",
+            "knowsAbout": ["PocketMine-MP", "Minecraft Bedrock Edition", "PHP", "Plugin Development"]
+        }
+    }
+    </script>
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0a14;
+            --surface: #12121f;
+            --surface2: #1a1a2e;
+            --border: rgba(255,255,255,0.06);
+            --accent: #0ea5e9;
+            --accent2: #6366f1;
+            --accent3: #8b5cf6;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-dim: #4a5568;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --radius: 16px;
+        }
+
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100dvh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* === ANIMATED BG === */
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 600px 400px at 20% 20%, rgba(14,165,233,0.06), transparent),
+                radial-gradient(ellipse 500px 500px at 80% 60%, rgba(99,102,241,0.04), transparent);
+        }
+
+        .wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === HERO === */
+        .hero {
+            text-align: center;
+            padding: 80px 20px 48px;
+        }
+
+        .avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: 0 0 30px rgba(14,165,233,0.25);
+        }
+
+        .hero h1 {
+            font-size: clamp(32px, 7vw, 52px);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(16px, 3vw, 20px);
+            color: var(--text-muted);
+            max-width: 550px;
+            margin: 0 auto 24px;
+        }
+
+        .hero-links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .hero-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            transition: border-color 0.2s, transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .hero-link:hover { border-color: var(--accent); transform: translateY(-1px); }
+        .hero-link:active { transform: scale(0.97); }
+
+        /* === STATS === */
+        .stats {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 0 20px 48px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        /* === FILTER === */
+        .filter-bar {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar h2 {
+            font-size: clamp(20px, 4vw, 28px);
+            font-weight: 700;
+            margin-right: auto;
+        }
+
+        .sort-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sort-btn:hover { border-color: var(--accent); color: var(--text); }
+        .sort-btn.active { background: rgba(14,165,233,0.1); border-color: var(--accent); color: var(--accent); }
+
+        /* === PROJECT GRID === */
+        .projects {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .project {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            text-decoration: none;
+            color: var(--text);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .project:hover {
+            border-color: rgba(14,165,233,0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(14,165,233,0.08);
+        }
+
+        .project:active { transform: scale(0.98); }
+
+        .project-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .project-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .project-icon.plugin { background: rgba(34,197,94,0.15); }
+        .project-icon.tool { background: rgba(14,165,233,0.15); }
+        .project-icon.other { background: rgba(99,102,241,0.15); }
+
+        .project-name {
+            font-size: 16px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .project-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            flex: 1;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .project-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-plugin { background: rgba(34,197,94,0.12); color: var(--success); }
+        .tag-tool { background: rgba(14,165,233,0.12); color: var(--accent); }
+        .tag-other { background: rgba(99,102,241,0.12); color: #a5b4fc; }
+
+        .project-links {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .project-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text-muted);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .project-links a:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* === LOADING === */
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-dim);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === FOOTER === */
+        footer {
+            text-align: center;
+            padding: 32px 20px;
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 13px;
+        }
+
+        footer a { color: var(--accent); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* === MOBILE === */
+        @media (max-width: 640px) {
+            .hero { padding: 60px 16px 36px; }
+            .avatar { width: 72px; height: 72px; }
+            .stats { gap: 16px; }
+            .stat-num { font-size: 24px; }
+            .projects { grid-template-columns: 1fr; gap: 12px; }
+            .project { padding: 20px; }
+            .filter-bar { padding: 0 16px 20px; }
+            .sort-btn { padding: 7px 12px; font-size: 12px; }
+        }
+
+        @media (max-width: 380px) {
+            .hero h1 { font-size: 28px; }
+            .hero-link { width: 100%; justify-content: center; }
+        }
+
+        @media (pointer: coarse) {
+            .sort-btn, .hero-link, .project-links a { min-height: 44px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="wrapper">
+    <header class="hero" role="banner">
+        <img class="avatar" src="https://github.com/w1zardz.png" alt="w1zardz avatar" width="96" height="96" loading="eager">
+        <h1>w1zardz</h1>
+        <p class="subtitle">PocketMine-MP Developer — open-source plugins &amp; tools for Minecraft Bedrock Edition</p>
+        <div class="hero-links">
+            <a href="https://github.com/w1zardz" class="hero-link" aria-label="GitHub Profile">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                GitHub
+            </a>
+        </div>
+    </header>
+
+    <div class="stats" id="stats" aria-label="Statistics">
+        <div class="stat">
+            <div class="stat-num" id="stat-repos">—</div>
+            <div class="stat-label">Projects</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num" id="stat-stars">—</div>
+            <div class="stat-label">Stars</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num" id="stat-tools">—</div>
+            <div class="stat-label">Tools</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num" id="stat-plugins">—</div>
+            <div class="stat-label">Plugins</div>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <h2>Projects</h2>
+        <button class="sort-btn active" data-sort="updated" aria-label="Sort by recently updated">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Recent
+        </button>
+        <button class="sort-btn" data-sort="name" aria-label="Sort alphabetically">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="8" y2="18"/></svg>
+            A-Z
+        </button>
+        <button class="sort-btn" data-sort="stars" aria-label="Sort by stars">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Stars
+        </button>
+    </div>
+
+    <div class="projects" id="projects" role="list">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading projects...</p>
+        </div>
+    </div>
+</div>
+
+<footer role="contentinfo">
+    <p>Built by <a href="https://github.com/w1zardz">w1zardz</a> — PocketMine-MP &amp; Minecraft Bedrock Developer</p>
+</footer>
+
+<script>
+(function() {
+    'use strict';
+
+    const SKIP = new Set(['w1zardz', 'w1zardz.github.io']);
+
+    const ICONS = {
+        plugin: { emoji: '🔌', cls: 'plugin' },
+        tool: { emoji: '🛠', cls: 'tool' },
+        other: { emoji: '📂', cls: 'other' }
+    };
+
+    const PLUGIN_KEYWORDS = ['plugin', 'pmmp', 'pocketmine', 'weather', 'Weather'];
+    const TOOL_KEYWORDS = ['converter', 'analyzer', 'builder', 'editor', 'drawer', 'viewer', 'formatter', 'craft', 'check', 'calculator'];
+
+    function classify(repo) {
+        const name = repo.name.toLowerCase();
+        const desc = (repo.description || '').toLowerCase();
+        const combined = name + ' ' + desc;
+        if (PLUGIN_KEYWORDS.some(k => combined.includes(k.toLowerCase()))) return 'plugin';
+        if (TOOL_KEYWORDS.some(k => combined.includes(k.toLowerCase()))) return 'tool';
+        return 'other';
+    }
+
+    function timeAgo(dateStr) {
+        const diff = Date.now() - new Date(dateStr).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins < 60) return mins + 'm ago';
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return hrs + 'h ago';
+        const days = Math.floor(hrs / 24);
+        if (days < 30) return days + 'd ago';
+        const months = Math.floor(days / 30);
+        if (months < 12) return months + 'mo ago';
+        return Math.floor(months / 12) + 'y ago';
+    }
+
+    function getPageUrl(repo) {
+        if (repo.homepage) return repo.homepage;
+        if (repo.has_pages) return 'https://w1zardz.github.io/' + repo.name + '/';
+        return null;
+    }
+
+    function renderCard(repo) {
+        const type = classify(repo);
+        const icon = ICONS[type];
+        const desc = repo.description || 'No description yet.';
+        const pageUrl = getPageUrl(repo);
+
+        let linksHtml = '<a href="' + repo.html_url + '" target="_blank" rel="noopener">GitHub</a>';
+        if (pageUrl) {
+            linksHtml += '<a href="' + pageUrl + '" target="_blank" rel="noopener">Live Demo</a>';
+        }
+
+        return '<article class="project" role="listitem">' +
+            '<div class="project-header">' +
+                '<div class="project-icon ' + icon.cls + '">' + icon.emoji + '</div>' +
+                '<div>' +
+                    '<div class="project-name">' + repo.name + '</div>' +
+                    '<span class="tag tag-' + type + '">' + type + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<p class="project-desc">' + desc + '</p>' +
+            '<div class="project-meta">' +
+                (repo.stargazers_count > 0 ? '<span>⭐ ' + repo.stargazers_count + '</span>' : '') +
+                (repo.language ? '<span>• ' + repo.language + '</span>' : '') +
+                '<span>• ' + timeAgo(repo.updated_at) + '</span>' +
+            '</div>' +
+            '<div class="project-links">' + linksHtml + '</div>' +
+        '</article>';
+    }
+
+    let allRepos = [];
+    let currentSort = 'updated';
+
+    function sortRepos(repos, by) {
+        const copy = repos.slice();
+        switch (by) {
+            case 'updated':
+                copy.sort(function(a, b) { return new Date(b.updated_at) - new Date(a.updated_at); });
+                break;
+            case 'name':
+                copy.sort(function(a, b) { return a.name.localeCompare(b.name); });
+                break;
+            case 'stars':
+                copy.sort(function(a, b) { return b.stargazers_count - a.stargazers_count; });
+                break;
+        }
+        return copy;
+    }
+
+    function renderAll() {
+        var container = document.getElementById('projects');
+        var sorted = sortRepos(allRepos, currentSort);
+        container.innerHTML = sorted.map(renderCard).join('');
+    }
+
+    function updateStats() {
+        var plugins = 0, tools = 0, stars = 0;
+        allRepos.forEach(function(r) {
+            var t = classify(r);
+            if (t === 'plugin') plugins++;
+            if (t === 'tool') tools++;
+            stars += r.stargazers_count;
+        });
+        document.getElementById('stat-repos').textContent = allRepos.length;
+        document.getElementById('stat-stars').textContent = stars;
+        document.getElementById('stat-tools').textContent = tools;
+        document.getElementById('stat-plugins').textContent = plugins;
+    }
+
+    // Sort buttons
+    document.querySelectorAll('.sort-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.sort-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            currentSort = btn.dataset.sort;
+            renderAll();
+        });
+    });
+
+    // Fetch repos
+    fetch('https://api.github.com/users/w1zardz/repos?per_page=100&sort=updated')
+        .then(function(r) { return r.json(); })
+        .then(function(repos) {
+            allRepos = repos.filter(function(r) {
+                return !r.fork && !SKIP.has(r.name);
+            });
+            updateStats();
+            renderAll();
+        })
+        .catch(function() {
+            document.getElementById('projects').innerHTML =
+                '<div class="loading"><p>Failed to load projects. <a href="https://github.com/w1zardz" style="color:var(--accent)">View on GitHub</a></p></div>';
+        });
+})();
+</script>
+
+</body>
+</html>
