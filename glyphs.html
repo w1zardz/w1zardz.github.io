@@ -226,7 +226,7 @@ footer a:hover{text-decoration:underline}
         <div class="hint">🌈 Каждая буква красится по очереди цветами градиента.</div>
       </div>
     </div>
-    <div class="hint" id="colorNote" style="display:none">ℹ️ У этого шрифта цвет уже зашит — красить не нужно. Форматирование (жирный/курсив/магия) работает.</div>
+    <div class="hint" id="colorNote" style="display:none">ℹ️ Зелёный шрифт красится поверх зелёного (цвета смешиваются). Для чистых цветов бери «Крупный» или «Мелкий».</div>
   </section>
 
   <!-- 4. PREVIEW -->
@@ -275,7 +275,7 @@ var SUBS={"Ё":"Е","Ъ":"Ь","Ы":"И"};
 var FONTS=[
   {id:"B7",name:"Крупный",meta:"жирный · большой",atlas:"B7",base:0xB700,cols:16,tint:true,map:B7MAP,sSize:24},
   {id:"E6",name:"Мелкий",meta:"тонкий · все буквы",atlas:"E6",base:0xE600,cols:16,tint:true,map:E6MAP,sSize:26},
-  {id:"E2",name:"Зелёный",meta:"пиксельный · зашит",atlas:"E2",base:0xE200,cols:16,tint:false,map:E2MAP,sSize:24}
+  {id:"E2",name:"Зелёный",meta:"пиксельный · красится",atlas:"E2",base:0xE200,cols:16,tint:true,green:true,map:E2MAP,sSize:24}
 ];
 
 /* ==== Bedrock §-цвета (hex для тинта белых шрифтов) ==== */
@@ -293,7 +293,21 @@ var SEQ=[
   {name:"Закат",emoji:"🌅",seq:["5","d","6","e"]},
   {name:"Кислота",emoji:"☠️",seq:["a","2"]},
   {name:"Конфета",emoji:"🍬",seq:["d","b","e","a"]},
-  {name:"Золото",emoji:"👑",seq:["6","e","6"]}
+  {name:"Золото",emoji:"👑",seq:["6","e","6"]},
+  {name:"Сакура",emoji:"🌸",seq:["d","f","d","e"]},
+  {name:"Тропики",emoji:"🌴",seq:["a","e","b","9"]},
+  {name:"Лава",emoji:"🌋",seq:["4","c","6","4"]},
+  {name:"Галактика",emoji:"🌌",seq:["5","9","d","1"]},
+  {name:"Неон",emoji:"💖",seq:["d","b","d","5"]},
+  {name:"Вишня",emoji:"🍒",seq:["4","c","d"]},
+  {name:"Пати",emoji:"🎉",seq:["c","e","a","b","d"]},
+  {name:"Единорог",emoji:"🦄",seq:["d","5","b","e","a"]},
+  {name:"Триколор",emoji:"🇷🇺",seq:["f","9","c"]},
+  {name:"Радиация",emoji:"🧪",seq:["2","a","e","a"]},
+  {name:"Гроза",emoji:"⚡",seq:["e","f","9","b"]},
+  {name:"Мята",emoji:"🍃",seq:["a","b","2","3"]},
+  {name:"Аметист",emoji:"💜",seq:["5","d","u","d"]},
+  {name:"Бирюза",emoji:"🩵",seq:["b","3","s","3"]}
 ];
 
 /* ==== STATE ==== */
@@ -306,26 +320,26 @@ function colHex(c){return COLHEX[c]||"#ffffff";}
 
 /* позиция ячейки глифа */
 function cellPos(font,codepoint,D){var idx=codepoint-font.base;var col=idx%font.cols,row=(idx/font.cols)|0;return {x:-(col*D),y:-(row*D)};}
-/* белый шрифт -> mask + color; цветной -> background-image */
+/* единый рендер: текстура × §цвет (multiply), обрезано по альфе глифа (mask) —
+   1-в-1 как тинт шрифта в Bedrock: белый×цвет=цвет, зелёный×цвет=зелёный×цвет */
 function spriteStyle(font,codepoint,D,tintHex,boldShadow){
-  var p=cellPos(font,codepoint,D),sheet=font.cols*D;
+  var p=cellPos(font,codepoint,D),sheet=font.cols*D,tint=tintHex||"#FFFFFF";
   var s="width:"+D+"px;height:"+D+"px;";
-  if(font.tint && tintHex){
-    s+="-webkit-mask-image:url("+ATLAS[font.atlas]+");mask-image:url("+ATLAS[font.atlas]+");";
-    s+="-webkit-mask-size:"+sheet+"px "+sheet+"px;mask-size:"+sheet+"px "+sheet+"px;";
-    s+="-webkit-mask-position:"+p.x+"px "+p.y+"px;mask-position:"+p.x+"px "+p.y+"px;";
-    s+="-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;background-color:"+tintHex+";";
-  }else{
-    s+="background-image:url("+ATLAS[font.atlas]+");background-size:"+sheet+"px "+sheet+"px;";
-    s+="background-position:"+p.x+"px "+p.y+"px;background-repeat:no-repeat;";
-  }
+  s+="background-image:url("+ATLAS[font.atlas]+");background-size:"+sheet+"px "+sheet+"px;";
+  s+="background-position:"+p.x+"px "+p.y+"px;background-repeat:no-repeat;";
+  s+="background-color:"+tint+";background-blend-mode:multiply;";
+  s+="-webkit-mask-image:url("+ATLAS[font.atlas]+");mask-image:url("+ATLAS[font.atlas]+");";
+  s+="-webkit-mask-size:"+sheet+"px "+sheet+"px;mask-size:"+sheet+"px "+sheet+"px;";
+  s+="-webkit-mask-position:"+p.x+"px "+p.y+"px;mask-position:"+p.x+"px "+p.y+"px;";
+  s+="-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;";
   if(boldShadow)s+="filter:drop-shadow(1px 0 "+boldShadow+");";
   return s;
 }
-/* быстрое обновление позиции (для анимации магии) */
+/* быстрое обновление позиции (для анимации магии) — двигаем и фон, и маску */
 function setPos(elm,font,codepoint,D){var p=cellPos(font,codepoint,D);
-  if(font.tint){elm.style.webkitMaskPosition=p.x+"px "+p.y+"px;";elm.style.maskPosition=p.x+"px "+p.y+"px";}
-  else{elm.style.backgroundPosition=p.x+"px "+p.y+"px";}}
+  elm.style.backgroundPosition=p.x+"px "+p.y+"px";
+  elm.style.webkitMaskPosition=p.x+"px "+p.y+"px";
+  elm.style.maskPosition=p.x+"px "+p.y+"px";}
 
 function resolveChar(ch,font){
   if(ch===" ")return {kind:"space"};
@@ -343,8 +357,8 @@ function activeSeq(){return SEQ[state.seqIdx].seq;}
 /* строка для копирования (настоящие PUA + §-коды) */
 function buildCopyString(text,font){
   var fmt=fmtCodes();
-  var useSeq=(font.tint && state.colorMode==="seq");
-  var useSolid=(font.tint && state.colorMode==="solid" && state.color!=="none");
+  var useSeq=(state.colorMode==="seq");
+  var useSolid=(state.colorMode==="solid" && state.color!=="none");
   var seq=useSeq?activeSeq():null;
   var out="",li=0;
   if(!seq){
@@ -375,14 +389,13 @@ function buildCopyString(text,font){
 
 /* тинт конкретной буквы (индекс среди видимых) */
 function tintFor(font,visibleIndex){
-  if(!font.tint)return null;
   if(state.colorMode==="seq"){var q=activeSeq();return colHex(q[visibleIndex%q.length]);}
   if(state.color==="none")return "#FFFFFF";
   return colHex(state.color);
 }
 function boldShadowFor(font,tint){
   if(!state.bold)return null;
-  return tint || (font.id==="E2" ? "#4fe39a" : "#ffffff");
+  return tint || "#ffffff";
 }
 
 /* ==== MAGIC ANIMATION ==== */
@@ -428,9 +441,9 @@ function renderOutput(){
   if(!text.trim()){out.className="out-box empty";out.textContent="Тут будет строка для копирования…";return;}
   out.className="out-box"+(state.italic?" ital":"");out.innerHTML="";
   var fmt=fmtCodes();
-  if(font.tint && state.colorMode==="solid" && state.color!=="none"){
+  if(state.colorMode==="solid" && state.color!=="none"){
     var chip=el("span","ccode");chip.textContent="§"+state.color+fmt;out.appendChild(chip);
-  }else if(font.tint && state.colorMode==="seq"){
+  }else if(state.colorMode==="seq"){
     var chip2=el("span","ccode");chip2.textContent=SEQ[state.seqIdx].emoji+fmt;out.appendChild(chip2);
   }else if(fmt){var chip3=el("span","ccode");chip3.textContent=fmt;out.appendChild(chip3);}
   var vi=0, vals=Object.keys(font.map).map(function(k){return font.map[k];});
@@ -460,7 +473,7 @@ function buildFontCards(){
     var tick=el("div","tick");tick.textContent="✓";card.appendChild(tick);
     var nm=el("div","fname");nm.textContent=font.name;card.appendChild(nm);
     var mt=el("div","fmeta");mt.textContent=font.meta;card.appendChild(mt);
-    var samp=el("div","fsample"),word="КРИП",tint=font.tint?"#FFFFFF":null;
+    var samp=el("div","fsample"),word="КРИП",tint="#FFFFFF";
     for(var i=0;i<word.length;i++){var r=resolveChar(word[i],font);
       if(r.kind==="glyph"){var g=el("span","g");g.setAttribute("style",spriteStyle(font,r.cp,font.sSize,tint,null));samp.appendChild(g);}}
     card.appendChild(samp);
@@ -507,11 +520,10 @@ function syncTabs(){
   document.querySelectorAll(".tab").forEach(function(t){t.classList.toggle("on",t.dataset.tab===state.colorMode);});
   document.querySelectorAll(".pane").forEach(function(p){p.classList.toggle("on",p.dataset.pane===state.colorMode);});
 }
-/* цвет доступен только для тинт-шрифтов */
+/* все шрифты красятся; для зелёного — инфо про смешивание с зелёным (multiply) */
 function syncColorZone(){
-  var zone=document.getElementById("colorZone"),note=document.getElementById("colorNote");
-  if(state.font.tint){zone.classList.remove("disabled");note.style.display="none";}
-  else{zone.classList.add("disabled");note.style.display="flex";}
+  var note=document.getElementById("colorNote");
+  note.style.display=state.font.green?"flex":"none";
 }
 
 /* ==== FORMAT TOGGLES ==== */
